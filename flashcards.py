@@ -63,3 +63,6 @@ def api_card_detail(index):
         return db[index]
     except IndexError:
         abort(404)
+
+if __name__ == '__main__':
+    app.run(debug=True, host='0.0.0.0')
