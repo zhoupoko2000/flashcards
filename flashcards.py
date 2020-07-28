@@ -1,7 +1,7 @@
 from flask import (Flask, render_template, abort, jsonify, request,
                    redirect, url_for)
 
-from model import db, save_db
+from model import dbfoo, save_db, load_db, remove_db
 
 app = Flask(__name__)
 
@@ -10,18 +10,18 @@ app = Flask(__name__)
 def welcome():
     return render_template(
         "welcome.html",
-        cards=db
+        cards=load_db()
     )
 
 
 @app.route('/card/<int:index>')
 def card_view(index):
     try:
-        card = db[index]
+        card = load_db()[index]
         return render_template("card.html",
                                card=card,
                                index=index,
-                               max_index=len(db)-1)
+                               max_index=len(load_db())-1)
     except IndexError:
         abort(404)
 
@@ -32,9 +32,9 @@ def add_card():
         # form has been submitted, process data
         card = {"question": request.form['question'],
                 "answer": request.form['answer']}
-        db.append(card)
-        save_db()
-        return redirect(url_for('card_view', index=len(db)-1))
+
+        save_db(card)
+        return redirect(url_for('card_view', index=len(load_db())-1))
     else:
         return render_template("add_card.html")
 
@@ -43,24 +43,23 @@ def add_card():
 def remove_card(index):
     try:
         if request.method == "POST":
-            del db[index]
-            save_db()
+            remove_db(load_db()[index])
             return redirect(url_for('welcome'))
         else:
-            return render_template("remove_card.html", card=db[index])
+            return render_template("remove_card.html", card=load_db()[index])
     except IndexError:
         abort(404)
 
 
 @app.route("/api/card/")
 def api_card_list():
-    return jsonify(db)
+    return jsonify(load_db())
 
 
 @app.route("/api/card/<int:index>")
 def api_card_detail(index):
     try:
-        return db[index]
+        return load_db()[index]
     except IndexError:
         abort(404)
 
