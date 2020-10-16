@@ -2,7 +2,7 @@ from flask import jsonify
 from pymongo import MongoClient
 # from bson.objectid import ObjectId
 # client = MongoClient('192.168.33.11', 27017)
-client = MongoClient(host="mongodb://mongo-0.mongo,mongo-1.mongo,mongo-2.mongo", port="27017")
+client = MongoClient(host="mongodb://mongo-0.mongo", port=27017)
 dbfoo = client.foo
 
 
